@@ -1,6 +1,4 @@
 # P3--Self-driving-Car-Nanodegree
-## **Behavioral Cloning** 
-
 ---
 
 **Behavioral Cloning Project**
@@ -16,7 +14,7 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./Images/cnn_nvidia.png "Model Visualization"
-[image2]: ./Images/placeholder.png "Grayscaling"
+[image2]: ./Images/center_2018_08_05_23_15_28_268.jpg "CenterCamera"
 [image3]: ./examples/placeholder_small.png "Recovery Image"
 [image4]: ./examples/placeholder_small.png "Recovery Image"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
@@ -56,7 +54,41 @@ My final network is based on the one from Nvidia's CNN for Self-driving car. ([C
 The original architecture is presented below for ready reference.
 
 ![alt text][image1]
-
+```
+if LeNetFlag == True:
+        model = Sequential()
+        model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
+        model.add(Lambda(lambda x: x/255.0-0.5))
+        model.add(Convolution2D(6,5,5, activation='relu'))
+        model.add(MaxPooling2D())
+        model.add(Dropout(0.25))
+        model.add(Convolution2D(6,5,5, activation='relu'))
+        model.add(MaxPooling2D())    
+        model.add(Flatten())
+        model.add(Dense(120))
+        model.add(Dropout(0.5))
+        model.add(Dense(84))
+        model.add(Dense(1))
+    if nVIDIAflag == True:
+        model = Sequential()
+        model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
+        model.add(Lambda(lambda x: x/255.0-0.5))
+        model.add(Convolution2D(24,5,5, border_mode ='valid', activation='relu'))
+        model.add(MaxPooling2D())
+        model.add(Convolution2D(36,5,5, border_mode ='valid', activation='relu'))
+        model.add(MaxPooling2D())     
+        model.add(Convolution2D(48,5,5, border_mode ='valid', activation='relu'))
+        model.add(MaxPooling2D())
+        model.add(Dropout(0.2))
+        model.add(Convolution2D(64,3,3, activation='relu'))
+        model.add(MaxPooling2D())          
+        model.add(Flatten())
+        model.add(Dense(100))
+        model.add(Dropout(0.5))
+        model.add(Dense(50))
+        model.add(Dense(10))
+        model.add(Dense(1))        
+```
 The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
 
 #### 2. Attempts to reduce overfitting in the model
