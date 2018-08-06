@@ -51,7 +51,7 @@ The model_as_taught.py file contains the code for training and saving the convol
 
 #### 1. An appropriate model architecture has been employed
 
-I tried with both the LeNet and the nVIDIA bases network architecture. In fact both the architecture are providing almost similar performance. The actual controller has been found to be the dataset. The code snippet below shows the implementation of both the types of networks.The flags were helpful in using a particular type of network for a given dataset.
+I tried with both the LeNet (picture reference: https://medium.com/@mrhwick/traffic-sign-classification-with-tensorflow-524caca13b2b) and the nVIDIA bases network architecture. In fact both the architecture are providing almost similar performance. The actual controller has been found to be the dataset. The code snippet below shows the implementation of both the types of networks.The flags were helpful in using a particular type of network for a given dataset.
 ```
 if LeNetFlag == True:
         model = Sequential()
