@@ -13,13 +13,14 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./Images/cnn_nvidia.png "Model Visualization"
-[image2]: ./Images/center_2018_08_05_23_15_28_268.jpg "CenterCamera"
+[image1]: ./Images/LeNet.png "LeNet Architecture"
+[image2]: ./Images/cnn_nvidia.png "Model Visualization"
+[image3]: ./Images/center_2018_08_05_23_15_28_268.jpg "CenterCamera"
 [image3]: ./examples/placeholder_small.png "Recovery Image"
 [image4]: ./examples/placeholder_small.png "Recovery Image"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
 [image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+
 
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
@@ -50,10 +51,7 @@ The model_as_taught.py file contains the code for training and saving the convol
 
 #### 1. An appropriate model architecture has been employed
 
-My final network is based on the one from Nvidia's CNN for Self-driving car. ([Click for details.](https://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf "Click for details."))
-The original architecture is presented below for ready reference.
-
-![alt text][image1]
+I tried with both the LeNet and the nVIDIA bases network architecture. In fact both the architecture are providing almost similar performance. The actual controller has been found to be the dataset. The code snippet below shows the implementation of both the types of networks.The flags were helpful in using a particular type of network for a given dataset.
 ```
 if LeNetFlag == True:
         model = Sequential()
@@ -69,6 +67,13 @@ if LeNetFlag == True:
         model.add(Dropout(0.5))
         model.add(Dense(84))
         model.add(Dense(1))
+ ```
+ The architecture can be visually represented as the following:
+ ![alt text][image1]
+ 
+However, as the my final network I have frozen a network that is based on the one from Nvidia's CNN for Self-driving car. ([Click for details.](https://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf "Click for details."))
+The original architecture is presented below for ready reference.
+ ```
     if nVIDIAflag == True:
         model = Sequential()
         model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
@@ -89,74 +94,52 @@ if LeNetFlag == True:
         model.add(Dense(10))
         model.add(Dense(1))        
 ```
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+![alt text][image2]
+
+The model includes RELU layers to introduce nonlinearity, and the data is normalized in the model using a Keras lambda layer. 
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+The model contains dropout layers in order to reduce overfitting. 
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting. The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually.
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
-
-For details about how I created the training data, see the next section. 
+Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road. The vehicle was facing some serious trouble after crossing the bridge. So, some extra data were generated near this location. 
 
 ### Model Architecture and Training Strategy
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+The overall strategy for deriving a model architecture was to compare performance between LeNet and nVIDIA architecture.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+My first step was to use a convolution neural network model similar to the LeNet. I thought this model might be appropriate because and eventually it appered to be so.
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
 
-To combat the overfitting, I modified the model so that ...
+To combat the overfitting, I modified the model to include the dropout layers. I also included some extra training data for various sections of the road circuit.
 
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track. To improve the driving behavior in these cases, I manually simulated the crashing situation and made the model train for such situation.
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
-
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
-
-![alt text][image1]
+The final model architecture (model_as_taught.py) used the whole data stored as a list. However, another code was written (model_as_taught_with_generator.py) to handle large data. When side camera recordings were used, the generator based code was used. However, that seemd to be overfitting the datas. So, finally I decided to go without the side camera data. Therefore, the generator based code is not being used in the final version.
 
 #### 3. Creation of the Training Set & Training Process
 
 To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
 
-![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
 ![alt text][image3]
-![alt text][image4]
-![alt text][image5]
 
-Then I repeated this process on track two in order to get more data points.
+To augmented the data sat, I also flipped images and angles thinking that this would remove the bias towards one sided driving. In fact this was the most important augmetation trick that came in useful.
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+I finally randomly shuffled the data set and put 20% of the data into a validation set. There were 13945 many data in th etraining set and 3487 many in the validation set.
 
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
-
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 1 as evidenced by the observation of the loss values. I used an adam optimizer so that manually training the learning rate wasn't necessary.
